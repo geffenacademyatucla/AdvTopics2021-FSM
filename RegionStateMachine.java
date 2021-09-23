@@ -1,10 +1,25 @@
-
+/**
+ * StateMachine for managing a DemoApp's states
+ * @author rspell
+ *
+ */
 public class RegionStateMachine {
+	// the owner of the state machine
 	protected DemoApp app = null;
+	// the current state that the DemoApp is in
 	protected RegionState currentState = null;
+	// the state that the owner was in during the previous time step
 	protected RegionState previousState = null;
+	// a state to run every time step; this state typically has logic that is
+	// common to any state in the state machine
 	protected RegionState globalState = null;
 	
+	/**
+	 * Create a StateMachine that is owned by a DemoApp, owner.
+	 * Owner just means that the state machine will have access to the properties and methods
+	 * of the owner. In other words it will be able to change the properties in the owner
+	 * @param owner
+	 */
 	public RegionStateMachine (DemoApp owner) {
 		this.app = owner;
 	}
@@ -31,11 +46,20 @@ public class RegionStateMachine {
 		
 		// only run if we have a current state
 		if(currentState != null) {
+			// the logic for the application is in the states...
+			// the application "behaves" differently depending on the state 
+			// that the app is in
 			currentState.execute(app);
 		}
 	}
 	
-	
+	/**
+	 * Will change the currentState to newState.
+	 * This method will call the exit method of the currentState that is being left
+	 * and the enter method on newState
+	 * 
+	 * @param newState
+	 */
 	public void changeState(RegionState newState) {
 		assert newState != null : "<StateMachine::changeState> trying to assign null state to current";
 		
@@ -52,6 +76,9 @@ public class RegionStateMachine {
 		currentState.enter(app);
 	}
 	
+	/**
+	 * go pack to the previousState
+	 */
 	public void revertToPreviousState() {
 		changeState(previousState);
 	}
