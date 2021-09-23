@@ -1,34 +1,58 @@
-
-
+/**
+ * Abstract class that all states inherit from.
+ * 
+ * @author rspell
+ *
+ */
 public abstract class RegionState {
 	protected String name;
 	
+	/**
+	 * Subclasses must implement this method. This method provides
+	 * the behavior that should be performed when the app is in this state.
+	 * 
+	 * @param r the application that this state controls
+	 */
 	abstract public void execute(DemoApp r);
 	
+	/**
+	 * Objects are created with a name that will serve as an identifier
+	 * @param name
+	 */
 	protected RegionState(String name) {
 		this.name = name;
 	}
 	
-	//
+	/**
+	 * Actions to perform when entering a state
+	 * 
+	 * @param r the application that this state controls 
+	 */
 	public void enter(DemoApp r) { 
 		System.out.printf("entering state %s\n",name,r);
 	}
 	
-	//
+	/**
+	 * Actions to perform when exiting a state
+	 * 
+	 * @param r the application that this state controls 
+	 */
 	public void exit(DemoApp r) { 
 		System.out.printf("exiting state %s\n",name,r);
 	}	
-	
-	//	
+		
 	public String name() { return name;}
+	
 	
 	public String toString() {
 		return name();
 	}
 }
 
-/*
- * In the global state we always check to see if the state needs to be changed based on where the mouse is
+/**
+ * State logic that is universal to all states. 
+ * @author rspell
+ *
  */
 class GlobalRegionState extends RegionState {
 	private static String myName = "GlobalRegionState";
@@ -44,7 +68,12 @@ class GlobalRegionState extends RegionState {
 		return instance;	
 	}
 	
-	@Override
+	/**
+	 * This is where the magic happens. This global state checks each
+	 * region to see if it contains the current mouse position.
+	 * Depending on the mouse's position the StateMachine for the DemoApp
+	 * is used to change the state of the application
+	 */
 	public void execute(DemoApp r) {
 		int mX = r.mouseX;
 		int mY = r.mouseY;
@@ -83,6 +112,11 @@ class GlobalRegionState extends RegionState {
 }
 
 
+/**
+ * Logic for when the mouse is in the UpperLeft region of the canvas
+ * @author rspell
+ *
+ */
 class UpperLeftAnimateState extends RegionState {
 	private static String myName = "UpperLeftAnimateState";
 	private static UpperLeftAnimateState instance = null;
@@ -98,12 +132,20 @@ class UpperLeftAnimateState extends RegionState {
 		return instance;	
 	}
 	
-	@Override
+	/**
+	 * Update and draw the region associated with this state
+	 */
 	public void execute(DemoApp r) {
 		for(MouseArea ma : r.mArea) {
+			
+			// only draw regions if they are not the one associated with this state
 			if(ma.id() != DemoApp.UPPERLEFT) {
 				ma.draw();
-			} else {
+			}
+			// if the MouseArea is the one associated with this state
+			// then we need to update it before we draw it. The update
+			// will handle the animation
+			else {
 				ma.update();
 				ma.draw();
 			}
@@ -117,6 +159,12 @@ class UpperLeftAnimateState extends RegionState {
 }
 
 
+/**
+ * @see class UpperLeftAnimateState
+ * 
+ * @author rspell
+ *
+ */
 class UpperRightAnimateState extends RegionState {
 	private static String myName = "UpperRightAnimateState";
 	private static UpperRightAnimateState instance = null;
@@ -151,6 +199,12 @@ class UpperRightAnimateState extends RegionState {
 }
 
 
+/**
+ * @see class UpperLeftAnimateState
+ * 
+ * @author rspell
+ *
+ */
 class LowerLeftAnimateState extends RegionState {
 	private static String myName = "LowerLeftAnimateState";
 	private static LowerLeftAnimateState instance = null;
@@ -184,7 +238,12 @@ class LowerLeftAnimateState extends RegionState {
 	}	
 }
 
-
+/**
+ * @see class UpperLeftAnimateState
+ * 
+ * @author rspell
+ *
+ */
 class LowerRightAnimateState extends RegionState {
 	private static String myName = "LowerRightAnimateState";
 	private static LowerRightAnimateState instance = null;
